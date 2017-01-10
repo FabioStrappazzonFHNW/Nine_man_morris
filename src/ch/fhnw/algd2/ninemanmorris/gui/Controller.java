@@ -1,6 +1,11 @@
 package ch.fhnw.algd2.ninemanmorris.gui;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
+import java.util.AbstractList;
+import java.util.Arrays;
 
 /**
  * Created by Claudio on 10.01.2017.
@@ -14,79 +19,64 @@ public class Controller {
         this.ui.setController(this);
         this.model = model;
 
-        initGameGraph();
+        this.model.getNodes().addAll(Arrays.asList(GameGraph.init()));
         drawGameGraph();
+
+        model.getPlayer1().addAll(Arrays.asList(initTokenPlayer(9, true, 20)));
+        drawTokens(model.getPlayer1());
+        model.getPlayer2().addAll(Arrays.asList(initTokenPlayer(9, false, 20)));
+        drawTokens(model.getPlayer2());
     }
 
-    private void initGameGraph() {
-        Node[] nodes = new Node[24];
-
-        for(int i = 0; i < nodes.length; i++) {
-            nodes[i] = new Node();
-        }
-
-        for(int i = 0; i < 8; i++) {
-            linkHorizontal(nodes, i);
-        }
-
-        int[] k = {0, 3, 6, 1, 16, 8, 5, 2};
-        int[] ab = {9, 7, 5, 3, 3, 4, 8, 12};
-        for(int i = 0; i < 8; i++) {
-            linkVertical(nodes, k[i], ab[i], ab[7 - i]);
-        }
-
-        model.setNodes(nodes);
-    }
-
-    private void linkHorizontal(Node[] nodes, int i) {
-            int k = i * 3;
-            nodes[k].setLeft(nodes[k + 1]);
-            nodes[k + 1].setRight(nodes[k]);
-            nodes[k + 1].setLeft(nodes[k + 2]);
-            nodes[k + 2].setRight(nodes[k + 1]);
-    }
-
-    private void linkVertical(Node[] nodes, int i, int a, int b) {
-        nodes[i].setBottom(nodes[i + a]);
-        nodes[i + a].setTop(nodes[i]);
-        nodes[i + a].setBottom(nodes[i + a + b]);
-        nodes[i + a + b].setTop(nodes[i + a]);
-    }
-
-    private void calculateNodePos(double a, double b) {
-        //fix calculate as circle
-        double[][] p = {{0, 0, 0.5},
-                {0.15, 0.15, 0.35},
-                {0.3, 0.3, 0.2},
-                {0.5, 0, 0.15},
-                {0.5, 0.7, 0.15},
-                {0.7, 0.3, 0.2},
-                {0.85, 0.15, 0.35},
-                {1, 0, 0.5}};
-        Node[] nodes = model.getNodes();
-        for(int i = 0; i < p.length; i++) {
-            for(int j = 0; j < p[i].length; j++) {
-                int k = i * 3 + j;
-                nodes[k].setX(p[i][1] * a + j * p[i][2] * a);
-                nodes[k].setY(p[i][0] * b);
-            }
-        }
+    public PModel getModel() {
+        return model;
     }
 
     public void drawGameGraph() {
-        GraphicsContext gc = ui.getGameArea().getGraphicsContext2D();
-        double radius = 5;
-        calculateNodePos(ui.getGameArea().getWidth() - 2 * radius , ui.getGameArea().getHeight() - 2 * radius);
+        GraphicsContext gc = ui.getGameBackground().getGraphicsContext2D();
+        double border = 30;
+        double radius = model.getNodeRadius();
+        GameGraph.calculateNodePos(model.getNodes(), border, ui.getGameBackground().getWidth() , ui.getGameBackground().getHeight());
 
         for (Node n : model.getNodes()) {
-            gc.fillOval(n.getX(), n.getY(), 2 * radius, 2 * radius);
+            gc.fillOval(n.getX() - radius, n.getY() - radius, 2 * radius, 2 * radius);
 
             if(n.getRight() != null) {
-                gc.strokeLine(radius + n.getX(), radius + n.getY(), radius + n.getRight().getX(), radius + n.getRight().getY());
+                gc.strokeLine(n.getX(), n.getY(), n.getRight().getX(), n.getRight().getY());
             }
             if(n.getBottom() != null) {
-                gc.strokeLine(radius + n.getX(), radius + n.getY(), radius + n.getBottom().getX(), radius + n.getBottom().getY());
+                gc.strokeLine(n.getX(), n.getY(), n.getBottom().getX(), n.getBottom().getY());
             }
         }
+    }
+
+    private Token[] initTokenPlayer(int n, boolean white, double radius) {
+        Token[] tokens = new Token[n];
+        for (int i = 0; i < n; i++) {
+            tokens[i] = new Token(white, 250, 250);
+        }
+        return tokens;
+    }
+
+    private void drawTokens(AbstractList<Token> tokens) {
+        for(Token t : tokens) {
+            TokenShape tokenShape = new TokenShape(this, t);
+            ui.getTokenPane().getChildren().add(tokenShape);
+        }
+    }
+
+    public Node getNodeInRange(double x, double y) {
+        for(Node node : model.getNodes()) {
+            if (node.isInRange(x, y)) return node;
+        }
+        return null;
+    }
+
+    public void setMovingTokenColor(Token token) {
+        token.setColor(token.isWhite() ? model.getWhiteMove() : model.getBlackMove());
+    }
+
+    public void setNormalTokenColor(Token token) {
+        token.setColor(token.isWhite() ? model.getWhite() : model.getBlack());
     }
 }

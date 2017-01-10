@@ -3,9 +3,11 @@ package ch.fhnw.algd2.ninemanmorris.gui;
 /**
  * Created by Claudio on 10.01.2017.
  */
+
 public class Node {
     private Node right, bottom, left, top;
     private Token token;
+    private final double range = 20;
     private double x, y;
 
     public double getX() {
@@ -62,5 +64,9 @@ public class Node {
 
     public void setToken(Token token) {
         this.token = token;
+    }
+
+    boolean isInRange(double x, double y) {
+        return (x  - this.x) * (x  - this.x) + (y - this.y) * (y - this.y) <= range * range;
     }
 }
