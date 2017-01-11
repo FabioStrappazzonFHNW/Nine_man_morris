@@ -10,6 +10,22 @@ public class Node {
     private final double range = 20;
     private double x, y;
 
+    public Node() {
+        //default ctr
+    }
+
+    public Node(Token token) {
+        this.token = token;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
+    }
+
     public double getX() {
         return x;
     }
@@ -56,14 +72,6 @@ public class Node {
 
     public void setTop(Node top) {
         this.top = top;
-    }
-
-    public Token getToken() {
-        return token;
-    }
-
-    public void setToken(Token token) {
-        this.token = token;
     }
 
     boolean isInRange(double x, double y) {

@@ -2,10 +2,8 @@ package ch.fhnw.algd2.ninemanmorris.gui;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
-import java.util.AbstractList;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 /**
  * Created by Claudio on 10.01.2017.
@@ -19,12 +17,11 @@ public class Controller {
         this.ui.setController(this);
         this.model = model;
 
-        this.model.getNodes().addAll(Arrays.asList(GameGraph.init()));
-        drawGameGraph();
-
-        model.getPlayer1().addAll(Arrays.asList(initTokenPlayer(9, true, 20)));
+        for(Node node : GameGraph.init()) model.getNodes().add(node);
+        initPlayer2token(model.getPlayer1(), 9, true);
+        initPlayer2token(model.getPlayer2(),9, false);
+        drawBackground(880, 700);
         drawTokens(model.getPlayer1());
-        model.getPlayer2().addAll(Arrays.asList(initTokenPlayer(9, false, 20)));
         drawTokens(model.getPlayer2());
     }
 
@@ -32,11 +29,75 @@ public class Controller {
         return model;
     }
 
-    public void drawGameGraph() {
+    private void initPlayer2token(ArrayList<Node> player, int nToken, boolean white) {
+        player.add(new Node()); //Label
+        for (int i = 0; i < nToken; i++) {
+            player.add(new Node(new Token(white)));
+        }
+    }
+
+    public void drawBackground(double width, double height) {
+        double m = height - 2 * model.getBorder();
+        double x0 = (width - m) / 2;
+        double y0 = model.getBorder();
+        double g = m / 10;
+
+        ui.getGameBackground().getGraphicsContext2D().clearRect(0, 0, width, height);
+
+        calculateNodePos(model.getNodes(), x0, y0, m);
+        calculatePlayerNode(model.getPlayer1(), model.getBorder(), y0, g);
+        calculatePlayerNode(model.getPlayer2(), width - model.getBorder(), y0, g);
+
+        drawGameGraph();
+    }
+
+    private void calculateNodePos(ArrayList<Node> nodes, double x0, double y0, double m) {
+        //fix calculate as circle
+        double[][] p = {{0, 0, 0.5},
+                {0.15, 0.15, 0.35},
+                {0.3, 0.3, 0.2},
+                {0.5, 0, 0.15},
+                {0.5, 0.7, 0.15},
+                {0.7, 0.3, 0.2},
+                {0.85, 0.15, 0.35},
+                {1, 0, 0.5}};
+        for(int i = 0; i < p.length; i++) {
+            for(int j = 0; j < 3; j++) {
+                Node node = nodes.get(i * 3 + j);
+                double x = x0 + p[i][1] * m + j * p[i][2] * m;
+                double y = y0 + p[i][0] * m;
+                node.setX(x);
+                node.setY(y);
+
+                Token token = node.getToken();
+                if (token != null) {
+                    token.setX(x);
+                    token.setY(y);
+                }
+            }
+        }
+    }
+
+    private void calculatePlayerNode(ArrayList<Node> playerNode, double x0, double y0, double g) {
+        for (int i = 0; i < playerNode.size(); i++) {
+            Node node = playerNode.get(i);
+            node.setX(x0);
+            node.setY(y0 + i * g);
+
+            Token token = node.getToken();
+            if (token != null) {
+                token.setX(x0);
+                token.setY(y0 + i * g);
+            }
+
+        }
+    }
+
+    private void drawGameGraph() {
         GraphicsContext gc = ui.getGameBackground().getGraphicsContext2D();
-        double border = 30;
         double radius = model.getNodeRadius();
-        GameGraph.calculateNodePos(model.getNodes(), border, ui.getGameBackground().getWidth() , ui.getGameBackground().getHeight());
+        gc.setFill(model.getGameGraphColor());
+        gc.setStroke(model.getGameGraphColor());
 
         for (Node n : model.getNodes()) {
             gc.fillOval(n.getX() - radius, n.getY() - radius, 2 * radius, 2 * radius);
@@ -50,19 +111,11 @@ public class Controller {
         }
     }
 
-    private Token[] initTokenPlayer(int n, boolean white, double radius) {
-        Token[] tokens = new Token[n];
-        for (int i = 0; i < n; i++) {
-            tokens[i] = new Token(white, 250, 250);
-        }
-        return tokens;
-    }
-
-    private void drawTokens(AbstractList<Token> tokens) {
-        for(Token t : tokens) {
-            TokenShape tokenShape = new TokenShape(this, t);
+    private void drawTokens(ArrayList<Node> player) {
+        player.stream().skip(1).forEach(node -> {
+            TokenShape tokenShape = new TokenShape(this, node.getToken());
             ui.getTokenPane().getChildren().add(tokenShape);
-        }
+        });
     }
 
     public Node getNodeInRange(double x, double y) {
@@ -72,11 +125,24 @@ public class Controller {
         return null;
     }
 
-    public void setMovingTokenColor(Token token) {
-        token.setColor(token.isWhite() ? model.getWhiteMove() : model.getBlackMove());
+//    public void setMovingTokenColor(Token token) {
+//        token.setFillColor(token.isWhite() ? model.getWhiteMove() : model.getBlackMove());
+//    }
+//
+    public void setNormalTokenColor(Token token) {
+        token.setFillColor(token.isWhite() ? model.getWhite() : model.getBlack());
     }
 
-    public void setNormalTokenColor(Token token) {
-        token.setColor(token.isWhite() ? model.getWhite() : model.getBlack());
+    public Node findNode(Token token) {
+        for(Node node : model.getNodes()) {
+            if (node.getToken() == token) return node;
+        }
+        for(Node node : model.getPlayer1()) {
+            if (node.getToken() == token) return node;
+        }
+        for(Node node : model.getPlayer2()) {
+            if (node.getToken() == token) return node;
+        }
+        return null;
     }
 }

@@ -1,49 +1,72 @@
 package ch.fhnw.algd2.ninemanmorris.gui;
 
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by Claudio on 10.01.2017.
  */
 public class PModel {
-    private DoubleProperty nodeRadius;
-    private DoubleProperty tokenRadius;
-    private ArrayList<Node> nodes;
+    private final DoubleProperty border;
+    private final DoubleProperty nodeRadius;
+    private final DoubleProperty tokenRadius;
+    private final ObjectProperty<Color> gameGraphColor;
 
-    private ArrayList<Token> player1;
-    private ArrayList<Token> player2;
-    private Color white, black, whiteMove, blackMove;
+    private final ArrayList<Node> nodes;
+    private final ArrayList<Node> player1;
+    private final ArrayList<Node> player2;
+
+    private Color white, black;
+//    private Color whiteMove, blackMove;
+    private Color fixed, inRange, lost;
 
     public PModel() {
         nodes = new ArrayList<>();
         player1 = new ArrayList<>();
         player2 = new ArrayList<>();
 
+        border = new SimpleDoubleProperty(30);
         nodeRadius = new SimpleDoubleProperty(5);
         tokenRadius = new SimpleDoubleProperty(20);
+        gameGraphColor = new SimpleObjectProperty(Color.BLACK);
 
         white = Color.WHITE;
         black = Color.BLACK;
-        whiteMove = Color.LIGHTGRAY;
-        blackMove = Color.DARKGRAY.darker();
+//        whiteMove = Color.LIGHTGRAY;
+//        blackMove = Color.DARKGRAY.darker();
 
+        fixed = Color.BLACK;
+        inRange = Color.GREEN;
+        lost = Color.RED;
     }
 
     public ArrayList<Node> getNodes() {
         return nodes;
     }
 
-    public ArrayList<Token> getPlayer1() {
+    public ArrayList<Node> getPlayer1() {
         return player1;
     }
 
-    public ArrayList<Token> getPlayer2() {
+    public ArrayList<Node> getPlayer2() {
         return player2;
+    }
+
+    public double getBorder() {
+        return border.get();
+    }
+
+    public DoubleProperty borderProperty() {
+        return border;
+    }
+
+    public void setBorder(double border) {
+        this.border.set(border);
     }
 
     public double getNodeRadius() {
@@ -70,6 +93,18 @@ public class PModel {
         this.tokenRadius.set(tokenRadius);
     }
 
+    public Color getGameGraphColor() {
+        return gameGraphColor.get();
+    }
+
+    public ObjectProperty<Color> gameGraphColorProperty() {
+        return gameGraphColor;
+    }
+
+    public void setGameGraphColor(Color gameGraphColor) {
+        this.gameGraphColor.set(gameGraphColor);
+    }
+
     public Color getWhite() {
         return white;
     }
@@ -77,12 +112,12 @@ public class PModel {
     public Color getBlack() {
         return black;
     }
-
-    public Color getWhiteMove() {
-        return whiteMove;
-    }
-
-    public Color getBlackMove() {
-        return blackMove;
-    }
+//
+//    public Color getWhiteMove() {
+//        return whiteMove;
+//    }
+//
+//    public Color getBlackMove() {
+//        return blackMove;
+//    }
 }

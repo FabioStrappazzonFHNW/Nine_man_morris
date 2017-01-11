@@ -1,7 +1,5 @@
 package ch.fhnw.algd2.ninemanmorris.gui;
 
-import java.util.ArrayList;
-
 /**
  * Created by Claudio on 10.01.2017.
  */
@@ -39,26 +37,5 @@ public class GameGraph {
         nodes[i + a].setTop(nodes[i]);
         nodes[i + a].setBottom(nodes[i + a + b]);
         nodes[i + a + b].setTop(nodes[i + a]);
-    }
-
-    public static void calculateNodePos(ArrayList<Node> nodes, double border, double a, double b) {
-        double x = a - 2 * border;
-        double y = b - 2 * border;
-        //fix calculate as circle
-        double[][] p = {{0, 0, 0.5},
-                {0.15, 0.15, 0.35},
-                {0.3, 0.3, 0.2},
-                {0.5, 0, 0.15},
-                {0.5, 0.7, 0.15},
-                {0.7, 0.3, 0.2},
-                {0.85, 0.15, 0.35},
-                {1, 0, 0.5}};
-        for(int i = 0; i < p.length; i++) {
-            for(int j = 0; j < 3; j++) {
-                int k = i * 3 + j;
-                nodes.get(k).setX(border + p[i][1] * x + j * p[i][2] * x);
-                nodes.get(k).setY(border + p[i][0] * y);
-            }
-        }
     }
 }

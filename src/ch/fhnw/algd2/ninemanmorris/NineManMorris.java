@@ -21,7 +21,7 @@ public class NineManMorris extends Application{
         PModel model = new PModel();
         GUI ui = new GUI();
         Controller controller = new Controller(ui, model);
-        Scene scene = new Scene(ui, 800, 600);
+        Scene scene = new Scene(ui, 880, 720);
 
 //        scene.getStylesheets().add("/" + model.cssFileName);
 
