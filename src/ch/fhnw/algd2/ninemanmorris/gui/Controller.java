@@ -143,4 +143,22 @@ public class Controller {
     public void updateTurn() {
         turnManager.update();
     }
+
+    public long hash() {
+        long hash = 0L;
+        long state;
+        for(int i = 0; i < model.getNodes().size(); i++) {
+            Token token = model.getNodes().get(i).getToken();
+            if (token == null) {
+                state = 0b00L;
+            } else if (token.isWhite()) {
+                state = 0b01L;
+            } else {
+                state = 0b11L;
+            }
+            state <<= i * 2;
+            hash  = hash | state;
+        }
+        return hash;
+    }
 }
