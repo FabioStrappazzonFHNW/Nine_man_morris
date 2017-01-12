@@ -9,13 +9,15 @@ import java.util.ArrayList;
  * Created by Claudio on 10.01.2017.
  */
 public class Controller {
+    private Turn turn;
     private GUI ui;
     private PModel model;
 
-    public Controller(GUI ui, PModel model) {
+    public Controller(GUI ui, PModel model, Turn turn) {
         this.ui = ui;
         this.ui.setController(this);
         this.model = model;
+        this.turn = turn;
 
         for(Node node : GameGraph.init()) model.getNodes().add(node);
         initPlayer2token(model.getPlayer1(), 9, true);
@@ -118,11 +120,15 @@ public class Controller {
         });
     }
 
-    public Node getNodeInRange(double x, double y) {
+    public Node getNodeInRange(double x, double y, Node root) {
         for(Node node : model.getNodes()) {
-            if (node.isInRange(x, y)) return node;
+            if (node.isInRange(x, y, root)) return node;
         }
         return null;
+    }
+
+    public Node validateMove(double x, double y, Node root) {
+        return turn.validateMove(x, y, root);
     }
 
 //    public void setMovingTokenColor(Token token) {
@@ -133,13 +139,25 @@ public class Controller {
         token.setFillColor(token.isWhite() ? model.getWhite() : model.getBlack());
     }
 
-    public Node findNode(Token token) {
+    public Node validateToken(Token token) {
+        return turn.validateToken(token);
+    }
+
+    public Node findNodeInGame(Token token) {
         for(Node node : model.getNodes()) {
             if (node.getToken() == token) return node;
         }
+        return null;
+    }
+
+    public Node findNodeInWhite(Token token) {
         for(Node node : model.getPlayer1()) {
             if (node.getToken() == token) return node;
         }
+        return null;
+    }
+
+    public Node findNodeInBlack(Token token) {
         for(Node node : model.getPlayer2()) {
             if (node.getToken() == token) return node;
         }

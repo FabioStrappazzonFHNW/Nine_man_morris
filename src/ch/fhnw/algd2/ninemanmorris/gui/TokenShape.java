@@ -10,8 +10,6 @@ public class TokenShape extends Circle {
     private Token token;
     private Node root, node;
 
-
-
     public TokenShape(Controller controller, Token token) {
         this.controller = controller;
         this.token = token;
@@ -27,23 +25,26 @@ public class TokenShape extends Circle {
 
     private void addEventHandler() {
         setOnMousePressed(event -> {
-            root = controller.findNode(token);
-            token.setState(Token.State.LOST);
+            root = controller.validateToken(token);
+            if (token != null) token.setState(Token.State.LOST);
 //            controller.setMovingTokenColor(token);
         });
         setOnMouseDragged(event -> {
-            double x = event.getX();
-            double y = event.getY();
-            node = controller.getNodeInRange(x, y);
-            if (node != null) {
-                token.setState(Token.State.INRANGE);
-                x = node.getX();
-                y = node.getY();
-            } else {
-                token.setState(Token.State.LOST);
+            if (root != null) {
+                double x = event.getX();
+                double y = event.getY();
+                node = controller.validateMove(x, y, root);
+                if (node != null) {
+                    token.setState(Token.State.INRANGE);
+                    x = node.getX();
+                    y = node.getY();
+                } else {
+                    token.setState(Token.State.LOST);
+                }
+                token.setX(x);
+                token.setY(y);
             }
-            token.setX(x);
-            token.setY(y);
+
         });
         setOnMouseReleased(event -> {
             if (node != null) {
@@ -54,7 +55,7 @@ public class TokenShape extends Circle {
                 token.setY(root.getY());
             }
             token.setState(Token.State.FIXED);
-//            controller.setNormalTokenColor(token);
+            controller.setNormalTokenColor(token);
         });
     }
 

@@ -5,9 +5,10 @@ package ch.fhnw.algd2.ninemanmorris.gui;
  */
 
 public class Node {
+    private static final double range = 20;
+
     private Node right, bottom, left, top;
     private Token token;
-    private final double range = 20;
     private double x, y;
 
     public Node() {
@@ -74,7 +75,12 @@ public class Node {
         this.top = top;
     }
 
-    boolean isInRange(double x, double y) {
-        return (x  - this.x) * (x  - this.x) + (y - this.y) * (y - this.y) <= range * range;
+    public boolean isInRange(double x, double y, Node root) {
+        boolean neighbour = true;
+        if (root != null) {
+            neighbour = (root.top == this || root.right == this || root.bottom == this || root.left == this);
+        }
+        return neighbour && (token == null) &&
+                ((x  - this.x) * (x  - this.x) + (y - this.y) * (y - this.y) <= range * range);
     }
 }

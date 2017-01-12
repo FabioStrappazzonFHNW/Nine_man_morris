@@ -12,7 +12,6 @@ import javafx.stage.Stage;
  * Created by Claudio on 09.01.2017.
  */
 public class NineManMorris extends Application{
-
     public static void main(String[] args) {
         launch(args);
     }
@@ -20,7 +19,7 @@ public class NineManMorris extends Application{
     @Override public void start(Stage primaryStage) throws Exception {
         PModel model = new PModel();
         GUI ui = new GUI();
-        Controller controller = new Controller(ui, model);
+        Controller controller = new Controller(ui, model, null);
         Scene scene = new Scene(ui, 880, 720);
 
 //        scene.getStylesheets().add("/" + model.cssFileName);
