@@ -1,7 +1,8 @@
 package ch.fhnw.algd2.ninemanmorris.gui;
 
+import ch.fhnw.algd2.ninemanmorris.gui.turns.TurnManager;
+import ch.fhnw.algd2.ninemanmorris.gui.turns.TurnState;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
@@ -9,27 +10,30 @@ import java.util.ArrayList;
  * Created by Claudio on 10.01.2017.
  */
 public class Controller {
-    private Turn turn;
+    private TurnManager turnManager;
     private GUI ui;
     private PModel model;
 
-    public Controller(GUI ui, PModel model, Turn turn) {
+    public Controller(GUI ui, PModel model, TurnManager turnManager) {
         this.ui = ui;
         this.ui.setController(this);
         this.model = model;
-        this.turn = turn;
+        this.turnManager = turnManager;
+        this.turnManager.initTurnManager(this);
 
         for(Node node : GameGraph.init()) model.getNodes().add(node);
-        initPlayer2token(model.getPlayer1(), 9, true);
-        initPlayer2token(model.getPlayer2(),9, false);
+        initPlayer2token(model.getWhiteStartTokens(), 9, true);
+        initPlayer2token(model.getBlackStartTokens(),9, false);
         drawBackground(880, 700);
-        drawTokens(model.getPlayer1());
-        drawTokens(model.getPlayer2());
+        drawTokens(model.getWhiteStartTokens());
+        drawTokens(model.getBlackStartTokens());
     }
 
     public PModel getModel() {
         return model;
     }
+
+    public TurnManager getTurnManager() { return turnManager; }
 
     private void initPlayer2token(ArrayList<Node> player, int nToken, boolean white) {
         player.add(new Node()); //Label
@@ -47,8 +51,8 @@ public class Controller {
         ui.getGameBackground().getGraphicsContext2D().clearRect(0, 0, width, height);
 
         calculateNodePos(model.getNodes(), x0, y0, m);
-        calculatePlayerNode(model.getPlayer1(), model.getBorder(), y0, g);
-        calculatePlayerNode(model.getPlayer2(), width - model.getBorder(), y0, g);
+        calculatePlayerNode(model.getWhiteStartTokens(), model.getBorder(), y0, g);
+        calculatePlayerNode(model.getBlackStartTokens(), width - model.getBorder(), y0, g);
 
         drawGameGraph();
     }
@@ -120,47 +124,23 @@ public class Controller {
         });
     }
 
-    public Node getNodeInRange(double x, double y, Node root) {
-        for(Node node : model.getNodes()) {
-            if (node.isInRange(x, y, root)) return node;
-        }
-        return null;
-    }
-
-    public Node validateMove(double x, double y, Node root) {
-        return turn.validateMove(x, y, root);
-    }
-
 //    public void setMovingTokenColor(Token token) {
 //        token.setFillColor(token.isWhite() ? model.getWhiteMove() : model.getBlackMove());
 //    }
-//
+
     public void setNormalTokenColor(Token token) {
         token.setFillColor(token.isWhite() ? model.getWhite() : model.getBlack());
     }
 
     public Node validateToken(Token token) {
-        return turn.validateToken(token);
+        return turnManager.getCurrentTurnState().validateToken(token);
     }
 
-    public Node findNodeInGame(Token token) {
-        for(Node node : model.getNodes()) {
-            if (node.getToken() == token) return node;
-        }
-        return null;
+    public Node validateMove(double x, double y, Node root) {
+        return turnManager.getCurrentTurnState().validateMove(x, y, root);
     }
 
-    public Node findNodeInWhite(Token token) {
-        for(Node node : model.getPlayer1()) {
-            if (node.getToken() == token) return node;
-        }
-        return null;
-    }
-
-    public Node findNodeInBlack(Token token) {
-        for(Node node : model.getPlayer2()) {
-            if (node.getToken() == token) return node;
-        }
-        return null;
+    public void updateTurn() {
+        turnManager.update();
     }
 }

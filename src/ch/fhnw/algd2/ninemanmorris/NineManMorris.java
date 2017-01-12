@@ -3,6 +3,7 @@ package ch.fhnw.algd2.ninemanmorris;
 import ch.fhnw.algd2.ninemanmorris.gui.Controller;
 import ch.fhnw.algd2.ninemanmorris.gui.GUI;
 import ch.fhnw.algd2.ninemanmorris.gui.PModel;
+import ch.fhnw.algd2.ninemanmorris.gui.turns.TurnManager;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -19,7 +20,8 @@ public class NineManMorris extends Application{
     @Override public void start(Stage primaryStage) throws Exception {
         PModel model = new PModel();
         GUI ui = new GUI();
-        Controller controller = new Controller(ui, model, null);
+        TurnManager turnManager = new TurnManager();
+        Controller controller = new Controller(ui, model, turnManager);
         Scene scene = new Scene(ui, 880, 720);
 
 //        scene.getStylesheets().add("/" + model.cssFileName);

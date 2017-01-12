@@ -18,17 +18,16 @@ public class PModel {
     private final ObjectProperty<Color> gameGraphColor;
 
     private final ArrayList<Node> nodes;
-    private final ArrayList<Node> player1;
-    private final ArrayList<Node> player2;
+    private final ArrayList<Node> whiteStartTokens;
+    private final ArrayList<Node> blackStartTokens;
 
     private Color white, black;
 //    private Color whiteMove, blackMove;
-    private Color fixed, inRange, lost;
 
     public PModel() {
         nodes = new ArrayList<>();
-        player1 = new ArrayList<>();
-        player2 = new ArrayList<>();
+        whiteStartTokens = new ArrayList<>();
+        blackStartTokens = new ArrayList<>();
 
         border = new SimpleDoubleProperty(30);
         nodeRadius = new SimpleDoubleProperty(5);
@@ -39,22 +38,18 @@ public class PModel {
         black = Color.BLACK;
 //        whiteMove = Color.LIGHTGRAY;
 //        blackMove = Color.DARKGRAY.darker();
-
-        fixed = Color.BLACK;
-        inRange = Color.GREEN;
-        lost = Color.RED;
     }
 
     public ArrayList<Node> getNodes() {
         return nodes;
     }
 
-    public ArrayList<Node> getPlayer1() {
-        return player1;
+    public ArrayList<Node> getWhiteStartTokens() {
+        return whiteStartTokens;
     }
 
-    public ArrayList<Node> getPlayer2() {
-        return player2;
+    public ArrayList<Node> getBlackStartTokens() {
+        return blackStartTokens;
     }
 
     public double getBorder() {

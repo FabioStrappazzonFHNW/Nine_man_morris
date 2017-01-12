@@ -75,12 +75,11 @@ public class Node {
         this.top = top;
     }
 
-    public boolean isInRange(double x, double y, Node root) {
-        boolean neighbour = true;
-        if (root != null) {
-            neighbour = (root.top == this || root.right == this || root.bottom == this || root.left == this);
-        }
-        return neighbour && (token == null) &&
-                ((x  - this.x) * (x  - this.x) + (y - this.y) * (y - this.y) <= range * range);
+    public boolean isNeighbor(Node root) {
+        return root.top == this || root.right == this || root.bottom == this || root.left == this;
+    }
+
+    public boolean isInRange(double x, double y) {
+        return (token == null) && ((x  - this.x) * (x  - this.x) + (y - this.y) * (y - this.y) <= range * range);
     }
 }
